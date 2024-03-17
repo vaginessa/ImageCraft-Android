@@ -7,7 +7,6 @@ import static com.yangdai.imagecraft.main.LaunchFactory.handleResult;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
@@ -42,10 +41,7 @@ import com.yangdai.imagecraft.imagedata.ImageType;
 import com.yangdai.imagecraft.R;
 import com.yangdai.imagecraft.utils.Utils;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 
 public class MainFragment extends Fragment {
 
@@ -320,29 +316,14 @@ public class MainFragment extends Fragment {
 
     private void handleCropMediaResult(Uri uri) {
         if (uri != null) {
-            String filePath = FileUtils.getRealPathFromUri(uri, requireContext());
-            String imageType = BitmapUtils.getMimeType(filePath);
-            if (!"image/png".equals(imageType) && !"image/jpeg".equals(imageType) && !"image/webp".equals(imageType)) {
-                Bitmap bitmap = BitmapFactory.decodeFile(filePath);
-                if (bitmap != null) {
-                    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
-                    byte[] jpegData = outputStream.toByteArray();
-                    File convertedFile = new File(requireContext().getCacheDir(), "temp.jpeg");
-                    try {
-                        FileOutputStream fileOutputStream = new FileOutputStream(convertedFile);
-                        fileOutputStream.write(jpegData);
-                        fileOutputStream.close();
-                        cropImage(Uri.fromFile(convertedFile), ImageType.JPEG);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                } else {
-                    Log.d("PhotoPicker", "Failed to decode bitmap");
-                }
-            } else {
-                cropImage(uri, BitmapUtils.getImageType(filePath));
+            try {
+                String filePath = FileUtils.getRealPathFromUri(uri, requireContext());
+                ImageType imageType = BitmapUtils.getImageType(filePath);
+                cropImage(uri, imageType);
+            } catch (Exception e) {
+                Log.e("uCrop", e.toString());
             }
+
         } else {
             Log.d("PhotoPicker", "No media selected");
         }
