@@ -71,7 +71,7 @@ public class Utils {
         resolveIntent.addCategory(Intent.CATEGORY_LAUNCHER);
         resolveIntent.setPackage(packageName);
         List<ResolveInfo> apps = packageManager.queryIntentActivities(resolveIntent, 0);
-        if (apps.size() == 0) {
+        if (apps.isEmpty()) {
             return;
         }
         ResolveInfo resolveInfo = apps.iterator().next();
