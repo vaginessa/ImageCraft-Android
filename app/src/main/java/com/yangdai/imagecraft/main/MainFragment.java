@@ -213,7 +213,7 @@ public class MainFragment extends Fragment {
                 .show();
     }
 
-    // 在需要打开系统文件夹并选择 PDF 文件的地方调用此方法
+    // 在需要打开系统文件夹并选择 PDF文件的地方调用此方法
     private void openSystemFolderForPDF(View ignoredView) {
         pickPdfMedia.launch("application/pdf");
     }

@@ -33,7 +33,7 @@ public class ConvertActivity extends BaseImageProcessingActivity {
         Bitmap bitmap = bitmapDecoder.getBitmap();
         if (bitmap != null) {
             try {
-                BitmapUtils.saveImage(bitmap, viewModel.getContext(), type);
+                BitmapUtils.saveImage2(bitmap, viewModel.getContext(), type, bitmapDecoder.getName());
                 viewModel.addTaskDone();
             } finally {
                 bitmap.recycle();

@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.ParcelFileDescriptor;
 
+import androidx.documentfile.provider.DocumentFile;
 import androidx.exifinterface.media.ExifInterface;
 
 import com.yangdai.imagecraft.utils.FileUtils;
@@ -22,6 +23,7 @@ public class BitmapDecoder {
     private final int orientation;
     private final ImageType imageType;
     private final Map<String, String> exifInfo;
+    private final String name;
 
     public BitmapDecoder(Context context, Uri uri) {
         try {
@@ -32,6 +34,11 @@ public class BitmapDecoder {
         orientation = decodeBitmapOrientation(context, uri);
         imageType = BitmapUtils.getImageType(FileUtils.getRealPathFromUri(uri, context));
         exifInfo = decodeExifInfo(context, uri);
+        name = getFileRealNameWithoutExtensionFromUri(context, uri);
+    }
+
+    public String getName() {
+        return name;
     }
 
     public Bitmap getBitmap() {
@@ -61,6 +68,23 @@ public class BitmapDecoder {
     public Map<String, String> getExifInfo() {
         return exifInfo;
     }
+
+    private String getFileRealNameWithoutExtensionFromUri(Context context, Uri fileUri) {
+        if (context == null || fileUri == null) return "";
+        DocumentFile documentFile = DocumentFile.fromSingleUri(context, fileUri);
+        if (documentFile == null) return "";
+
+        String fileName = documentFile.getName();
+        if (fileName != null) {
+            int extensionIndex = fileName.lastIndexOf(".");
+            if (extensionIndex != -1) {
+                fileName = fileName.substring(0, extensionIndex);
+            }
+        }
+
+        return fileName;
+    }
+
 
     private Bitmap getBitmapFromUri(Context context, Uri uri) throws IOException {
         ParcelFileDescriptor parcelFileDescriptor = context.getContentResolver().openFileDescriptor(uri, "r");

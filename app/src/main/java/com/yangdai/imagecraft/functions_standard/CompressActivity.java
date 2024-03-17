@@ -40,11 +40,11 @@ public class CompressActivity extends BaseImageProcessingActivity {
             try {
                 Bitmap compressedBitmap = isAuto ? BitmapUtils.compressBitmap(bitmap, type) : BitmapUtils.compressBitmap(bitmap, type, size);
                 if (type == ImageType.PNG) {
-                    type = ImageType.JPEG;
+                    type = ImageType.WEBP;
                 }
                 if (compressedBitmap != null) {
                     // 保存更改后的图像
-                    BitmapUtils.saveImage(compressedBitmap, viewModel.getContext(), type);
+                    BitmapUtils.saveImage2(compressedBitmap, viewModel.getContext(), type, bitmapDecoder.getName());
                     compressedBitmap.recycle();
                 }
                 viewModel.addTaskDone();

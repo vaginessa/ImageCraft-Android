@@ -38,7 +38,7 @@ public class RotateActivity extends BaseImageProcessingActivity {
         if (bitmap != null) {
             try {
                 Bitmap rotatedBitmap = BitmapUtils.rotateBitmap(bitmap, degree, isVFlipped, isHFlipped);
-                BitmapUtils.saveImage(rotatedBitmap, viewModel.getContext(), type);
+                BitmapUtils.saveImage2(rotatedBitmap, viewModel.getContext(), type, bitmapDecoder.getName());
                 rotatedBitmap.recycle();
                 viewModel.addTaskDone();
             } finally {

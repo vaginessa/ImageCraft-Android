@@ -46,7 +46,7 @@ public class ResizeActivity extends BaseImageProcessingActivity {
             try {
                 Bitmap resizedBitmap = isPercentage ?
                         BitmapUtils.resizeBitmapByPercentage(bitmap, percentage) : BitmapUtils.resizeBitmapByPixel(bitmap, width, height);
-                BitmapUtils.saveImage(resizedBitmap, viewModel.getContext(), type);
+                BitmapUtils.saveImage2(resizedBitmap, viewModel.getContext(), type, bitmapDecoder.getName());
                 resizedBitmap.recycle();
                 viewModel.addTaskDone();
             } finally {

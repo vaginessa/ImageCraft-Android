@@ -93,14 +93,24 @@ public class BitmapUtils {
      * 根据图片原格式返回类型，默认jpeg
      */
     public static ImageType getImageType(String imagePath) {
-        String type = getMimeType(imagePath);
-        if ("image/png".equals(type)) {
-            return ImageType.PNG;
-        } else if ("image/webp".equals(type)) {
-            return ImageType.WEBP;
-        } else {
-            return ImageType.JPEG;
+        String extension = getFileExtension(imagePath).toLowerCase();
+        return switch (extension) {
+            case "jpg", "jpeg" -> ImageType.JPEG;
+            case "png" -> ImageType.PNG;
+            default -> ImageType.WEBP;
+        };
+    }
+
+    /**
+     * 获取文件扩展名
+     */
+    private static String getFileExtension(String path) {
+        if (path == null) return null;
+        int lastDotIndex = path.lastIndexOf(".");
+        if (lastDotIndex != -1 && lastDotIndex < path.length() - 1) {
+            return path.substring(lastDotIndex + 1);
         }
+        return null;
     }
 
     /**
@@ -164,7 +174,7 @@ public class BitmapUtils {
      */
     public static Bitmap compressBitmap(Bitmap bitmap, ImageType type) {
         Bitmap.CompressFormat compressFormat;
-        if (type == ImageType.JPEG || type == ImageType.PNG) {
+        if (type == ImageType.JPEG) {
             compressFormat = Bitmap.CompressFormat.JPEG;
         } else {
             compressFormat = Bitmap.CompressFormat.WEBP;
@@ -180,7 +190,7 @@ public class BitmapUtils {
      */
     public static Bitmap compressBitmap(Bitmap bitmap, ImageType type, int maxSizeInKb) {
         Bitmap.CompressFormat compressFormat;
-        if (type == ImageType.JPEG || type == ImageType.PNG) {
+        if (type == ImageType.JPEG) {
             compressFormat = Bitmap.CompressFormat.JPEG;
         } else {
             compressFormat = Bitmap.CompressFormat.WEBP;
@@ -229,6 +239,35 @@ public class BitmapUtils {
         values.put(MediaStore.Images.Media.IS_PENDING, true);
         values.put(MediaStore.Images.Media.MIME_TYPE, type.getMimeType());
         values.put(MediaStore.Images.Media.DISPLAY_NAME, generateDateName()); // 设置图片名称
+        Bitmap.CompressFormat compressFormat = type.getCompressFormat();
+
+        Uri uri = context.getApplicationContext().getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+        if (uri != null) {
+            try {
+                OutputStream outputStream = context.getApplicationContext().getContentResolver().openOutputStream(uri);
+                if (outputStream != null) {
+                    bitmap.compress(compressFormat, 100, outputStream);
+                    outputStream.close();
+                    values.put(MediaStore.Images.Media.IS_PENDING, false);
+                    context.getApplicationContext().getContentResolver().update(uri, values, null, null);
+                    return uri.toString();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return "";
+    }
+
+    /**
+     * API29 中的最新保存图片到相册的方法
+     */
+    public static String saveImage2(Bitmap bitmap, Context context, ImageType type, String name) {
+        ContentValues values = new ContentValues();
+        values.put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/" + context.getString(R.string.app_name));
+        values.put(MediaStore.Images.Media.IS_PENDING, true);
+        values.put(MediaStore.Images.Media.MIME_TYPE, type.getMimeType());
+        values.put(MediaStore.Images.Media.DISPLAY_NAME, name + "_" + generateDateName() + "_" + context.getString(R.string.app_name)); // 设置图片名称
         Bitmap.CompressFormat compressFormat = type.getCompressFormat();
 
         Uri uri = context.getApplicationContext().getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);

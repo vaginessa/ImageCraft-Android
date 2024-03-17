@@ -17,7 +17,7 @@ import java.time.format.DateTimeFormatter;
 public class FileUtils {
     public static String generateDateName() {
         LocalDateTime currentDateTime = LocalDateTime.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd_HHmmssSSS");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss");
         return currentDateTime.format(formatter);
     }
 
